@@ -10,10 +10,13 @@
     "test": "node --test src/analytics.test.js"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.2",
     "ag-studio": "^3.0.0",
     "ag-studio-react": "^3.0.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "three": "^0.187.0"
   },
   "devDependencies": {
     "vite": "^7.0.0"

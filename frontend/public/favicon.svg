@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="TrustPay AI">
+  <defs>
+    <linearGradient id="g" x1="12" y1="8" x2="52" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4269df"/>
+      <stop offset="1" stop-color="#1c2d4b"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#0f1b2e"/>
+  <path d="M32 10 14 17v14c0 12.5 18 21.5 18 21.5S50 43.5 50 31V17L32 10Z" fill="url(#g)"/>
+  <path d="m24 31 5 5 11-12" fill="none" stroke="#e8f0ff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
