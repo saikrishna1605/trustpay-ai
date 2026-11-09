@@ -155,11 +155,12 @@ cp -n .env.example .env
 npm run dev
 ```
 
-Open **http://localhost:5173**, click **Connect API**, and enter the value of `TRUSTPAY_API_KEY`.
+Open **http://localhost:5173** for the public landing page. Click **Get Started** to enter the workspace (`#/app`), then **Connect API** and enter the value of `TRUSTPAY_API_KEY`. Direct workspace URL: http://localhost:5173/#/app
 
 | Local service | Address |
 | --- | --- |
-| Application | http://localhost:5173 |
+| Landing page | http://localhost:5173 |
+| Application workspace | http://localhost:5173/#/app |
 | Backend | http://localhost:8000 |
 | Interactive API documentation | http://localhost:8000/docs |
 
