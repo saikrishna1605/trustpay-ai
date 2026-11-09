@@ -16,11 +16,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/ .
 COPY --from=dashboard /frontend/dist /app/frontend_dist
 # Must match fly.toml [http_service] internal_port and [env] PORT.
-ENV TRUSTPAY_DB=/data/trustpay.db \
+# Default DB is ephemeral /tmp (Fly free trial has no volumes). Override TRUSTPAY_DB when using a volume.
+ENV TRUSTPAY_DB=/tmp/trustpay.db \
     PORT=8080 \
     PYTHONUNBUFFERED=1
-RUN mkdir -p /data \
- && chmod +x /app/start.sh \
+RUN chmod +x /app/start.sh \
  && sed -i 's/\r$//' /app/start.sh
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=5s --start-period=45s --retries=3 \
