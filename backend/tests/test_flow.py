@@ -41,8 +41,17 @@ def test_production_requires_cors_when_frontend_set(tmp_path):
     with pytest.raises(ConfigError, match="ALLOWED_ORIGINS"):
         make_settings(
             tmp_path, trustpay_env="production", api_key="prod-key",
+            public_base_url="https://api.example.com",
             frontend_url="https://app.example.com", allowed_origins=(),
         ).validate()
+
+
+def test_production_same_origin_fly_skips_cors(tmp_path):
+    make_settings(
+        tmp_path, trustpay_env="production", api_key="prod-key",
+        public_base_url="https://trustpay-ai.fly.dev",
+        frontend_url="https://trustpay-ai.fly.dev", allowed_origins=(),
+    ).validate()
 
 
 def test_production_disables_openapi_docs(tmp_path, fake_paypal, llm_down):

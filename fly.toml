@@ -1,0 +1,46 @@
+# TrustPay AI — Fly.io single-service deploy (UI + API from root Dockerfile).
+# Rename `app` to match the app you create in the Fly dashboard (or via `fly apps create`).
+# Secrets stay out of this file — set them with `fly secrets set` / the dashboard.
+
+app = "trustpay-ai"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8080"
+  TRUSTPAY_ENV = "production"
+  TRUST_PROXY = "true"
+  TRUSTPAY_DB = "/data/trustpay.db"
+  # Post-deploy: set PUBLIC_BASE_URL, FRONTEND_URL (and ALLOWED_ORIGINS for Path B) via secrets/env.
+  # Same-origin Path A: PUBLIC_BASE_URL and FRONTEND_URL = https://<app>.fly.dev
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 50
+    hard_limit = 80
+
+  [[http_service.checks]]
+    interval = "15s"
+    timeout = "5s"
+    grace_period = "45s"
+    method = "GET"
+    path = "/api/health"
+
+[mounts]
+  source = "trustpay_data"
+  destination = "/data"
+  initial_size = "1gb"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

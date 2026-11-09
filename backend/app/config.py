@@ -125,10 +125,17 @@ class Settings:
             missing.append("TRUSTPAY_API_KEY")
         if missing:
             raise ConfigError("Missing required environment variables: " + ", ".join(missing))
-        if self.is_production and self.frontend_url and not self.allowed_origins:
+        # Split UI (e.g. Vercel) needs CORS. Same-origin Docker/Fly (FRONTEND_URL == PUBLIC_BASE_URL) does not.
+        if (
+            self.is_production
+            and self.frontend_url
+            and not self.allowed_origins
+            and self.frontend_url.rstrip("/") != self.public_base_url.rstrip("/")
+        ):
             raise ConfigError(
-                "Production with FRONTEND_URL requires ALLOWED_ORIGINS "
-                "(comma-separated browser origins for the Vercel/frontend host)"
+                "Production with a separate FRONTEND_URL requires ALLOWED_ORIGINS "
+                "(comma-separated browser origins for the Vercel/frontend host). "
+                "Same-origin Fly/Docker can set FRONTEND_URL equal to PUBLIC_BASE_URL and leave ALLOWED_ORIGINS empty."
             )
         if self.is_production and "sandbox" not in self.paypal_base_url and not self.paypal_webhook_id:
             raise ConfigError("Live PayPal requires PAYPAL_WEBHOOK_ID so capture events stay in sync")
