@@ -1,7 +1,8 @@
 import React from 'react';
 import './landing.css';
 
-function Shell({title, children, onHome, onGetStarted}){
+function Shell({title, children, onHome, onGetStarted, theme='dark', setTheme}){
+  const dark=theme!=='light';
   return (
     <div className="landing-root legal-page">
       <header className="lp-nav solid">
@@ -13,6 +14,7 @@ function Shell({title, children, onHome, onGetStarted}){
             <span>TrustPay <em>AI</em></span>
           </a>
           <div className="lp-nav-actions">
+            {setTheme&&<button type="button" className="lp-theme" aria-label={dark?'Switch to light theme':'Switch to dark theme'} aria-pressed={dark} onClick={()=>setTheme(dark?'light':'dark')}>{dark?'Light mode':'Dark mode'}</button>}
             <button type="button" className="lp-btn ghost" onClick={onHome}>Home</button>
             <button type="button" className="lp-btn primary" onClick={onGetStarted}>Get Started</button>
           </div>
@@ -28,9 +30,9 @@ function Shell({title, children, onHome, onGetStarted}){
   );
 }
 
-export function PrivacyPage({onHome,onGetStarted}){
+export function PrivacyPage({onHome,onGetStarted,theme,setTheme}){
   return (
-    <Shell title="Privacy Policy" onHome={onHome} onGetStarted={onGetStarted}>
+    <Shell title="Privacy Policy" onHome={onHome} onGetStarted={onGetStarted} theme={theme} setTheme={setTheme}>
       <p>This policy describes how the TrustPay AI sandbox prototype handles information when you use the local or hosted application.</p>
       <h2>Information we process</h2>
       <ul>
@@ -60,9 +62,9 @@ export function PrivacyPage({onHome,onGetStarted}){
   );
 }
 
-export function TermsPage({onHome,onGetStarted}){
+export function TermsPage({onHome,onGetStarted,theme,setTheme}){
   return (
-    <Shell title="Terms & Conditions" onHome={onHome} onGetStarted={onGetStarted}>
+    <Shell title="Terms & Conditions" onHome={onHome} onGetStarted={onGetStarted} theme={theme} setTheme={setTheme}>
       <p>These terms apply to the TrustPay AI hackathon / sandbox prototype.</p>
       <h2>Nature of the service</h2>
       <p>TrustPay AI assists buyers in reviewing purchase signals with specialist agents and requires a recorded human decision before creating a PayPal order in supported flows. It is a prototype, not a licensed financial advisory or fraud-insurance product.</p>
