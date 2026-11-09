@@ -15,12 +15,15 @@ COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/ .
 COPY --from=dashboard /frontend/dist /app/frontend_dist
+# Must match fly.toml [http_service] internal_port and [env] PORT.
 ENV TRUSTPAY_DB=/data/trustpay.db \
     PORT=8080 \
     PYTHONUNBUFFERED=1
-RUN mkdir -p /data
+RUN mkdir -p /data \
+ && chmod +x /app/start.sh \
+ && sed -i 's/\r$//' /app/start.sh
 EXPOSE 8080
-# Fly http_service.internal_port and Render $PORT both work: default 8080, override via PORT.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=45s --retries=3 \
   CMD python -c "import os,urllib.request; urllib.request.urlopen('http://127.0.0.1:%s/api/health' % os.environ.get('PORT','8080'), timeout=4)"
-CMD ["sh", "-c", "uvicorn app.main:create_app --factory --host 0.0.0.0 --port ${PORT:-8080}"]
+# Use start.sh so PORT is always expanded by a real shell (avoids stale ${PORT:-8000} images).
+CMD ["/app/start.sh"]

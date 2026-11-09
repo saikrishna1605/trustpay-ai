@@ -9,6 +9,7 @@ primary_region = "iad"
   dockerfile = "Dockerfile"
 
 [env]
+  # Must match Dockerfile ENV PORT, start.sh default, EXPOSE, and http_service.internal_port.
   PORT = "8080"
   TRUSTPAY_ENV = "production"
   TRUST_PROXY = "true"
@@ -22,7 +23,6 @@ primary_region = "iad"
   auto_stop_machines = "stop"
   auto_start_machines = true
   min_machines_running = 0
-  processes = ["app"]
 
   [http_service.concurrency]
     type = "requests"
