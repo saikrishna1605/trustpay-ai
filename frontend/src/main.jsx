@@ -34,9 +34,7 @@ function Ring({score,level='LOW',size=144}){return <div className="ring" style={
 function ActivityChart({rows}){const days=dailyCounts(rows),max=Math.max(1,...days.map(d=>d.count)),points=days.map((d,i)=>[48+i*85,150-d.count/max*110]);return <div className="activity-chart"><svg viewBox="0 0 590 190" role="img" aria-label={`Daily assessments in UTC: ${days.map(d=>`${d.date}: ${d.count}`).join(', ')}`}><defs><linearGradient id="area" x1="0" y1="0" x2="0" y2="1"><stop stopColor="#4674ee" stopOpacity=".18"/><stop offset="1" stopColor="#4674ee" stopOpacity="0"/></linearGradient></defs>{[0,.5,1].map(v=><g key={v}><line x1="48" x2="558" y1={150-v*110} y2={150-v*110} stroke="#edf1f6" strokeDasharray="4 5"/><text x="15" y={154-v*110}>{Number((max*v).toFixed(1))}</text></g>)}<path d={`M${points[0][0]},150 ${points.map(p=>'L'+p.join(',')).join(' ')} L558,150 Z`} fill="url(#area)"/><polyline pathLength="1" points={points.map(p=>p.join(',')).join(' ')} fill="none" stroke="#4674ee" strokeWidth="3" strokeLinejoin="round"/>{points.map((p,i)=><g key={i}><circle cx={p[0]} cy={p[1]} r="4" fill="#fff" stroke="#4674ee" strokeWidth="2"><title>{days[i].date}: {days[i].count} assessments</title></circle><text x={p[0]} y="178" textAnchor="middle">{days[i].date.slice(5)}</text></g>)}</svg></div>;}
 function RiskChart({rows}){const values=distribution(rows),total=rows.length;let offset=0;return <div className="risk-chart"><div className="donut"><svg viewBox="0 0 120 120" role="img" aria-label={values.map(v=>`${v.level}: ${v.count}`).join(', ')}><circle cx="60" cy="60" r="46" fill="none" stroke="#edf1f6" strokeWidth="13"/>{values.map(v=>{const fraction=total?v.count/total:0,at=offset;offset+=fraction;return <circle key={v.level} cx="60" cy="60" r="46" fill="none" stroke={COLORS[v.level]} strokeWidth="13" strokeDasharray={`${fraction*289.027} 289.027`} strokeDashoffset={-at*289.027} transform="rotate(-90 60 60)"/>;})}</svg><div><strong>{total}</strong><span>reviews</span></div></div><div className="legend">{values.map(v=><div key={v.level}><i style={{background:COLORS[v.level]}}/><span>{v.level.toLowerCase()}</span><b>{v.count}</b></div>)}</div></div>;}
 function Table({rows,onOpen,filter,setFilter,search,setSearch}){const filtered=rows.filter(r=>(filter==='ALL'||r.risk_level===filter)&&`${r.product} ${r.seller}`.toLowerCase().includes(search.toLowerCase()));return <><div className="table-toolbar"><div className="searchbox"><Icon name="search" size={16}/><input aria-label="Search assessments" placeholder="Search products or sellers…" value={search} onChange={e=>setSearch(e.target.value)}/></div><select aria-label="Filter risk level" value={filter} onChange={e=>setFilter(e.target.value)}>{['ALL','LOW','MEDIUM','HIGH','CRITICAL'].map(v=><option key={v} value={v}>{v==='ALL'?'All risk levels':v}</option>)}</select></div>{!filtered.length?<Empty title={rows.length?'No matching records':'No assessments yet'} text={rows.length?'Try another search or risk filter.':'Your purchase reviews will appear here.'}/>:<div className="table-scroll"><table><thead><tr><th>Purchase / seller</th><th>Amount</th><th>Risk</th><th>Payment</th><th>Reviewed</th><th><span className="sr-only">Action</span></th></tr></thead><tbody>{filtered.map(r=><tr key={r.id}><td><div className="table-product"><span className="product-icon"><Icon name="shield" size={18}/></span><div><b>{r.product}</b><small>{r.seller}</small></div></div></td><td className="nowrap">{money(r.amount,r.currency)}<small>{r.currency}</small></td><td><Badge value={r.risk_level}/><small>{r.risk_score}/100</small></td><td><Badge value={r.payment_status}/></td><td className="nowrap muted">{dateLabel(r.created_at)}</td><td><button className="icon-btn" aria-label={`Open ${r.product}`} onClick={()=>onOpen(r.id)}><Icon name="arrow" size={17}/></button></td></tr>)}</tbody></table></div>}</>;}
-function App({initialPage='overview', onMarketing}={}){
- const [theme,setTheme]=useState(()=>document.documentElement.dataset.theme||'light');
- useEffect(()=>{document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme;try{localStorage.setItem('trustpay-theme',theme);}catch{}},[theme]);
+function App({initialPage='overview', onMarketing, theme='dark', setTheme}={}){
  const [page,setPage]=useState(initialPage),[key,setKey]=useState(''),[connected,setConnected]=useState(false),[publicConfig,setPublicConfig]=useState(null);
  useEffect(()=>{if(WORKSPACE_PAGES.has(initialPage))setPage(initialPage);},[initialPage]);
  const [data,setData]=useState(null),[dev,setDev]=useState(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState(''),[health,setHealth]=useState(null),[updated,setUpdated]=useState(null);
@@ -83,8 +81,18 @@ function App({initialPage='overview', onMarketing}={}){
  {page==='settings'&&<div className="settings-grid"><Panel title="Backend connection" subtitle="Your access key is kept in memory only" action={<Icon name="key"/>}><form onSubmit={e=>{e.preventDefault();connect();}}><label>TrustPay API access key<input type="password" autoComplete="off" placeholder="Paste TRUSTPAY_API_KEY from backend/.env" value={key} onChange={e=>setKey(e.target.value)}/></label><p className="form-note">Use your TrustPay key here. PayPal, OpenAI and Channel3 secrets belong in backend/.env.</p><button className="primary" disabled={busy}>{connected?'Reconnect workspace':'Connect workspace'}<Icon name="arrow" size={16}/></button></form>{connected&&<div className="connected-note"><Icon name="check" size={17}/>Connected · updated {updated?.toLocaleTimeString('en-GB')}</div>}<div className="setting-divider"/><label><span className="label-icon"><Icon name="globe" size={16}/>Preferred checkout language</span><select aria-label="Preferred checkout language" value={locale} onChange={e=>chooseLocale(e.target.value)}>{Object.entries(LANGUAGES).map(([v,l])=><option key={v} value={v}>{l}</option>)}</select></label><p className="muted">Applied when you create a new PayPal order. TrustPay's interface and AI reports currently use English.</p></Panel><Panel title="Connection guide" subtitle="Keep the right credentials in the right place"><div className="guide-list">{[['01','Start the backend','Run FastAPI from the backend directory on port 8000.'],['02','Connect this workspace','Paste TRUSTPAY_API_KEY above. Re-enter it after refreshing or returning from PayPal.'],['03','Review and compare','AI keys enable model reviews. CHANNEL3_API_KEY enables product search.'],['04','Test checkout','Use a PayPal sandbox personal buyer account. No real funds are moved.']].map(([n,t,d])=><div key={n}><span>{n}</span><div><b>{t}</b><p>{d}</p></div></div>)}</div></Panel></div>}
  <footer><span>TrustPay AI <i/> Human-approved commerce</span><span>{updated?`Synced ${updated.toLocaleTimeString('en-GB')}`:'Workspace not connected'} <i/> Sandbox only</span></footer></main></div></div>;
 }
+function readStoredTheme(){
+ try{const saved=localStorage.getItem('trustpay-theme');if(saved==='dark'||saved==='light')return saved;}catch{}
+ return document.documentElement.dataset.theme==='light'?'light':'dark';
+}
 function Root(){
  const [route,setRoute]=useState(()=>readRoute());
+ const [theme,setTheme]=useState(readStoredTheme);
+ useEffect(()=>{
+  document.documentElement.dataset.theme=theme;
+  document.documentElement.style.colorScheme=theme;
+  try{localStorage.setItem('trustpay-theme',theme);}catch{}
+ },[theme]);
  useEffect(()=>{
   const sync=()=>setRoute(readRoute());
   window.addEventListener('hashchange',sync);
@@ -100,9 +108,10 @@ function Root(){
   else setRoute(readRoute());
   window.scrollTo({top:0,behavior:'auto'});
  }
- if(route.view==='privacy')return <PrivacyPage onHome={()=>go('landing')} onGetStarted={()=>go('app','overview')}/>;
- if(route.view==='terms')return <TermsPage onHome={()=>go('landing')} onGetStarted={()=>go('app','overview')}/>;
- if(route.view==='landing')return <LandingPage onGetStarted={()=>go('app','overview')} onLogin={()=>go('app','settings')} onPrivacy={()=>go('privacy')} onTerms={()=>go('terms')}/>;
- return <App initialPage={route.page} onMarketing={()=>go('landing')}/>;
+ const themeProps={theme,setTheme:next=>setTheme(typeof next==='function'?next(theme):next)};
+ if(route.view==='privacy')return <PrivacyPage onHome={()=>go('landing')} onGetStarted={()=>go('app','overview')} {...themeProps}/>;
+ if(route.view==='terms')return <TermsPage onHome={()=>go('landing')} onGetStarted={()=>go('app','overview')} {...themeProps}/>;
+ if(route.view==='landing')return <LandingPage onGetStarted={()=>go('app','overview')} onLogin={()=>go('app','settings')} onPrivacy={()=>go('privacy')} onTerms={()=>go('terms')} {...themeProps}/>;
+ return <App initialPage={route.page} onMarketing={()=>go('landing')} theme={theme} setTheme={themeProps.setTheme}/>;
 }
 createRoot(document.getElementById('root')).render(<Root/>);

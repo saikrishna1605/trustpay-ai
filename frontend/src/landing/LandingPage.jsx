@@ -85,13 +85,14 @@ function DemoRisk(){
   );
 }
 
-export default function LandingPage({onGetStarted,onLogin,onPrivacy,onTerms}){
+export default function LandingPage({onGetStarted,onLogin,onPrivacy,onTerms,theme='dark',setTheme}){
   const reduced=useReducedMotion();
   const [scrolled,setScrolled]=useState(false);
   const [menuOpen,setMenuOpen]=useState(false);
   const [activeAgent,setActiveAgent]=useState('product');
   const [webgl,setWebgl]=useState(true);
   useReveal(reduced);
+  const dark=theme!=='light';
 
   useEffect(()=>{
     const onScroll=()=>setScrolled(window.scrollY>18);
@@ -128,6 +129,7 @@ export default function LandingPage({onGetStarted,onLogin,onPrivacy,onTerms}){
             <button type="button" onClick={()=>jump('about')}>About</button>
           </nav>
           <div className="lp-nav-actions">
+            {setTheme&&<button type="button" className="lp-theme" aria-label={dark?'Switch to light theme':'Switch to dark theme'} aria-pressed={dark} onClick={()=>setTheme(dark?'light':'dark')}>{dark?'Light mode':'Dark mode'}</button>}
             <button type="button" className="lp-btn ghost" onClick={onLogin}>Login</button>
             <button type="button" className="lp-btn primary" onClick={onGetStarted}>Get Started</button>
             <button type="button" className="lp-menu" aria-expanded={menuOpen} aria-label="Menu" onClick={()=>setMenuOpen(v=>!v)}>
