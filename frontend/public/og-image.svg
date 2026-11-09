@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="TrustPay AI  Shop smarter. Pay safer.">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#0f1b2e"/>
+      <stop offset="1" stop-color="#1c2d4b"/>
+    </linearGradient>
+    <linearGradient id="shield" x1="740" y1="120" x2="1040" y2="520" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5b84f0"/>
+      <stop offset="1" stop-color="#22ac8e"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="980" cy="140" r="180" fill="#4269df" opacity=".12"/>
+  <circle cx="860" cy="480" r="220" fill="#22ac8e" opacity=".1"/>
+  <text x="88" y="210" fill="#9eb4d8" font-family="Segoe UI, Arial, sans-serif" font-size="28" letter-spacing="4">TRUSTPAY AI</text>
+  <text x="88" y="300" fill="#f4f7fc" font-family="Segoe UI, Arial, sans-serif" font-size="72" font-weight="700">Shop smarter.</text>
+  <text x="88" y="380" fill="#f4f7fc" font-family="Segoe UI, Arial, sans-serif" font-size="72" font-weight="700">Pay safer.</text>
+  <text x="88" y="450" fill="#a9bdd9" font-family="Segoe UI, Arial, sans-serif" font-size="28">AI-assisted purchase review before PayPal checkout</text>
+  <path d="M920 150 780 205v145c0 95 140 165 140 165s140-70 140-165V205L920 150Z" fill="url(#shield)"/>
+  <path d="m860 330 40 40 90-100" fill="none" stroke="#f4f7fc" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
